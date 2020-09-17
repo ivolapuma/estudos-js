@@ -1,0 +1,172 @@
+<script>
+
+  function writeln(texto) {
+    if (texto != null) {
+      document.write(texto);
+    }    
+    document.write("<br>");
+  }
+
+  const PHI = (1 + Math.sqrt(5)) / 2; // numero phi ou razao aurea, tal que phi = 1 + 1/phi
+
+  function fibonacci(posicao) {
+    return Math.round(Math.pow(PHI, posicao) / Math.sqrt(5));
+  }
+
+  function isFibonacci(numero) {
+    let posicao = 0;
+    while (fibonacci(posicao) < numero) {
+      posicao++;
+    }
+    return fibonacci(posicao) == numero;
+  }
+
+  function distancia_phi(a, b) {
+    // quanto mais próximo de zero, mais próximo de ser uma razão áurea
+    if (a >= b) {
+      return Math.abs(((a+b)/a) - (a/b));
+    } else {
+      return Math.abs(((b+a)/b) - (b/a));
+    }
+  }
+
+  function menor_distancia_phi(maximo) {
+    let inicio = new Date().getTime();
+    let numero = maximo;
+    while (!isFibonacci(numero)) {
+      numero--;
+    }
+    let x = numero;
+    let y = Math.round(numero/PHI);
+    let distancia = distancia_phi(x, y);
+    let tempo = (new Date().getTime() - inicio);
+    return [x, y, distancia, tempo];
+  }
+
+  function numerosAureos(numeroInicial, quantidade, direcao) {
+    // numeroInicial:
+    //   numero base para iniciar a sequência
+    // quantidade:
+    //   quantidade de números obtidos a partir do início
+    // direcao:
+    //   maior ou igual a zero, retornar sequencia de números aureso em direção à direita
+    //   menor que zero, retornar sequencia de números aureso em direção à esquerda
+    let aureos = [];
+    let numero = numeroInicial;    
+    aureos.push(numero);
+    for (let n = 1; n <= quantidade; n++) {
+      if (direcao >= 0) {
+        numero *= PHI;
+      } else {
+        numero /= PHI;        
+      }
+      aureos.push(numero);      
+    }
+    return aureos;
+  }
+
+</script>
+
+<script>
+  // funções experimentais...
+  function menores_distancia_phi_bruto(maximo) {
+    let menor_distancia = 1;
+    let distancias = [];
+    let inicio = new Date().getTime();
+    distancias.push([1, 1, menor_distancia, 0]);
+    for (let x = 1; x <= maximo; x++) {
+      for (let y = 1; y <= x; y++) {
+        if (distancia_phi(x, y) < menor_distancia) {
+          menor_distancia = distancia_phi(x, y);
+          distancias.push([x, y, menor_distancia, (new Date().getTime() - inicio)]);
+        }
+      }
+    }
+    return distancias;
+  }
+
+  function menores_distancia_phi_fibonacci(maximo) {
+    let inicio = new Date().getTime();
+    let distancias = [];
+    let posicao = 1
+    while (fibonacci(posicao) <= maximo) {
+      let x = fibonacci(posicao);
+      let y = fibonacci(posicao-1);
+      let distancia = distancia_phi(x, y);
+      let tempo = new Date().getTime() - inicio;
+      distancias.push([x, y, distancia, tempo])
+      posicao++;
+    }
+    return distancias;
+  }
+</script>
+
+<h3>Teste da função distancia_phi</h3>
+<script>
+  writeln("Distancia phi entre "+PHI+" e "+1+" = "+distancia_phi(PHI, 1));
+  writeln("Distancia phi entre "+24157817+" e "+14930352+" = "+distancia_phi(24157817, 14930352));
+</script>
+
+<!-- 
+<h3>Razão áurea entre os números da Série Fibonacci</h3>
+<script>
+  for (let x = 1; x <= 10; x++) {
+    writeln(fibonacci(x-1)+" e "+fibonacci(x)+", distancia phi = "+distancia_phi(fibonacci(x), fibonacci(x-1)));
+  }
+</script> -->
+
+<!-- 
+<h3>Números inteiros com menores distâncias phi</h3>
+<script>
+  let maximo = 10000000;
+  // writeln(`Método "Força Bruta"`);
+  // let distancias = menores_distancia_phi_bruto(maximo);
+  // for (let i = 0; i < distancias.length; i++) {
+  //   writeln(`x=${distancias[i][0]} xFibo=${isFibonacci(distancias[i][0])} y=${distancias[i][1]} yFibo=${isFibonacci(distancias[i][1])} distancia_phi=${distancias[i][2]} ms=${distancias[i][3]}`);
+  // }
+  // writeln("");
+  // writeln(`Método "Heurística por Fibonacci"`);
+  // distancias = menores_distancia_phi_fibonacci(maximo);
+  // for (let i = 0; i < distancias.length; i++) {
+  //   writeln(`x=${distancias[i][0]} xFibo=${isFibonacci(distancias[i][0])} y=${distancias[i][1]} yFibo=${isFibonacci(distancias[i][1])} distancia_phi=${distancias[i][2]} ms=${distancias[i][3]}`);
+  // }
+  writeln("");
+  writeln(`A menor distância pelo método "Heurística por Fibonacci"`);
+  let distancia = menor_distancia_phi(maximo);
+  writeln(`x=${distancia[0]} xFibo=${isFibonacci(distancia[0])} y=${distancia[1]} yFibo=${isFibonacci(distancia[1])} distancia_phi=${distancia[2]} ms=${distancia[3]}`);
+  // writeln("");
+  // writeln(`A menor distância pelo método "Heurística por Fibonacci OPT"`);
+  // distancia = menor_distancia_phi_opt(maximo);
+  // writeln(`x=${distancia[0]} xFibo=${isFibonacci(distancia[0])} y=${distancia[1]} yFibo=${isFibonacci(distancia[1])} distancia_phi=${distancia[2]} ms=${distancia[3]}`);
+</script>
+ -->
+
+<h3>Sequência de números áureos</h3>
+<script>
+  let aureos = []
+  aureos = numerosAureos(1, 10, 1);
+  for (let i = 0; i < aureos.length; i++) {
+    writeln(aureos[i]);
+  }
+  writeln();
+  aureos = numerosAureos(1, 10, -1);
+  for (let i = 0; i < aureos.length; i++) {
+    writeln(aureos[i]);
+  }
+  writeln();
+  aureos = numerosAureos(0, 10, 1);
+  for (let i = 0; i < aureos.length; i++) {
+    writeln(aureos[i]);
+  }
+  writeln();
+  aureos = numerosAureos(0, 10, -1);
+  for (let i = 0; i < aureos.length; i++) {
+    writeln(aureos[i]);
+  }
+  writeln();
+  aureos = numerosAureos(2, 10, 1);
+  for (let i = 0; i < aureos.length; i++) {
+    writeln(aureos[i]);
+  }
+</script>
+
